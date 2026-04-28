@@ -3,9 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 interface Analysis {
-  tasks: string[];
-  priorities: string[];
-  nextActions: string[];
+  response: string;
 }
 
 function wordCount(text: string) {
@@ -139,36 +137,15 @@ export default function Editor() {
           {isAnalyzing ? (
             <div className="analyzing-state">
               <div className="pulse-dot" />
-              <span>Reading your mind…</span>
+              <span>Reading between the lines…</span>
             </div>
           ) : (
             analysis && (
-              <>
-                <div className="panel-section">
-                  <h3>Tasks</h3>
-                  <ul>
-                    {analysis.tasks.map((t, i) => (
-                      <li key={i}>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="panel-section">
-                  <h3>Priorities</h3>
-                  <ul>
-                    {analysis.priorities.map((p, i) => (
-                      <li key={i}>{p}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="panel-section">
-                  <h3>Next Actions</h3>
-                  <ul>
-                    {analysis.nextActions.map((a, i) => (
-                      <li key={i}>{a}</li>
-                    ))}
-                  </ul>
-                </div>
-              </>
+              <div className="panel-response">
+                {analysis.response.split("\n\n").map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
             )
           )}
         </div>

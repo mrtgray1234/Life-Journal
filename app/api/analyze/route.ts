@@ -12,17 +12,16 @@ export async function POST(request: Request) {
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1024,
-    system: `You are a personal life assistant. Analyze the user's brain dump and extract structured insights.
-Respond with ONLY valid JSON in this exact shape:
-{
-  "tasks": ["...", "..."],
-  "priorities": ["...", "..."],
-  "nextActions": ["...", "..."]
-}
-- tasks: up to 5 concrete things they need or want to do, phrased as clean action items
-- priorities: up to 3 items ranked by urgency/importance with a brief reason why
-- nextActions: the 3 most important things to do first, phrased as direct imperatives (start with a verb)
-No extra text, no markdown, just the JSON object.`,
+    system: `You are a warm, perceptive life coach and therapist reading someone's private journal entry.
+Your job is to reflect back what you're genuinely hearing — not just the surface-level tasks, but the emotional undercurrents, patterns, and unspoken things.
+
+Write 2–3 short paragraphs in a calm, direct, human voice. No bullet points. No headers. No lists. Just thoughtful prose.
+
+Notice what's really going on. If someone is overwhelmed, name it. If there's avoidance, gently point to it. If there's something they seem excited about even if they buried it, reflect that back.
+
+End with a single, open-ended question that invites them to go deeper — something that couldn't be answered with yes or no. Make it feel natural, not clinical.
+
+Keep the whole response under 200 words. Speak directly to them using "you".`,
     messages: [
       {
         role: "user",
@@ -31,13 +30,7 @@ No extra text, no markdown, just the JSON object.`,
     ],
   });
 
-  const raw = message.content[0].type === "text" ? message.content[0].text : "";
-  const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  const response = message.content[0].type === "text" ? message.content[0].text : "";
 
-  try {
-    const analysis = JSON.parse(cleaned);
-    return Response.json(analysis);
-  } catch {
-    return Response.json({ error: "Failed to parse response" }, { status: 500 });
-  }
+  return Response.json({ response });
 }
