@@ -32,9 +32,10 @@ No extra text, no markdown, just the JSON object.`,
   });
 
   const raw = message.content[0].type === "text" ? message.content[0].text : "";
+  const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
 
   try {
-    const analysis = JSON.parse(raw);
+    const analysis = JSON.parse(cleaned);
     return Response.json(analysis);
   } catch {
     return Response.json({ error: "Failed to parse response" }, { status: 500 });
