@@ -324,13 +324,225 @@ body {
   position: relative;
 }
 
+.panel-todos li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
 .panel-todos li::before {
-  content: "·";
-  position: absolute;
-  left: 6px;
+  display: none;
+}
+
+.panel-todos li span {
+  flex: 1;
+}
+
+.add-todo-btn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
   color: var(--text-muted);
-  font-size: 18px;
-  line-height: 1.1;
+  font-size: 13px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  margin-top: 1px;
+  font-family: inherit;
+  padding: 0;
+}
+
+.add-todo-btn:hover:not(.added) {
+  background: rgba(74, 158, 255, 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.add-todo-btn.added {
+  background: rgba(62, 207, 107, 0.1);
+  border-color: #3ecf6b;
+  color: #3ecf6b;
+  cursor: default;
+}
+
+/* ── List Panel (left) ─────────────────────────── */
+.list-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 340px;
+  background: var(--panel-bg);
+  border-right: 1px solid var(--border);
+  padding: 52px 32px 52px 36px;
+  overflow-y: auto;
+  z-index: 20;
+  animation: slide-in-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+.list-input-wrap {
+  margin-bottom: 20px;
+}
+
+.list-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  color: var(--text);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.list-input::placeholder { color: var(--text-muted); }
+.list-input:focus { border-color: #333; }
+
+.list-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+
+.list-section-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 24px 0 10px;
+  opacity: 0.6;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.todo-item:hover { background: rgba(255,255,255,0.03); }
+
+.todo-check {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  background: none;
+  cursor: pointer;
+  margin-top: 2px;
+  transition: background 0.2s, border-color 0.2s;
+  padding: 0;
+}
+
+.todo-check:hover { border-color: #3ecf6b; }
+
+.todo-check.checked {
+  background: #3ecf6b;
+  border-color: #3ecf6b;
+}
+
+.todo-text {
+  flex: 1;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.todo-item.done .todo-text {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: #333;
+}
+
+.todo-delete {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: transparent;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.2s;
+  font-family: inherit;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.todo-item:hover .todo-delete { color: var(--text-muted); }
+.todo-delete:hover { color: var(--text) !important; }
+
+.list-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0 28px;
+}
+
+/* Entry history */
+.entry-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entry-item {
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: 1px solid transparent;
+}
+
+.entry-item:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: var(--border);
+}
+
+.entry-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+  letter-spacing: 0.02em;
+}
+
+.entry-preview {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.7;
 }
 
 /* Analyzing state */
