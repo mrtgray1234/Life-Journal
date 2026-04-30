@@ -34,7 +34,8 @@ Respond with ONLY the JSON object, no extra text.`,
   const raw = message.content[0].type === "text" ? message.content[0].text : "";
 
   try {
-    const parsed = JSON.parse(raw);
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+    const parsed = JSON.parse(cleaned);
     return Response.json(parsed);
   } catch {
     return Response.json({ error: "Failed to parse response" }, { status: 500 });
