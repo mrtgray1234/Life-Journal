@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 interface Analysis {
-  response: string;
+  reflection: string;
+  todos: string[];
 }
 
 function wordCount(text: string) {
@@ -141,11 +142,24 @@ export default function Editor() {
             </div>
           ) : (
             analysis && (
-              <div className="panel-response">
-                {analysis.response.split("\n\n").map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </div>
+              <>
+                <div className="panel-response">
+                  {analysis.reflection.split("\n\n").map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                </div>
+
+                {analysis.todos.length > 0 && (
+                  <div className="panel-todos">
+                    <h3>To-dos</h3>
+                    <ul>
+                      {analysis.todos.map((todo, i) => (
+                        <li key={i}>{todo}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
             )
           )}
         </div>

@@ -292,6 +292,47 @@ body {
   font-style: italic;
 }
 
+.panel-todos {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.panel-todos h3 {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+}
+
+.panel-todos ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.panel-todos li {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+  padding-left: 20px;
+  position: relative;
+}
+
+.panel-todos li::before {
+  content: "·";
+  position: absolute;
+  left: 6px;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1.1;
+}
+
 /* Analyzing state */
 .analyzing-state {
   display: flex;
