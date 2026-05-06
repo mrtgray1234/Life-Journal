@@ -24,6 +24,7 @@ interface Props {
   onAdd: (text: string) => void;
   onLoadEntry: (text: string) => void;
   onClose: () => void;
+  onRunAgent: (task: string) => void;
 }
 
 function formatDate(ts: number) {
@@ -35,7 +36,7 @@ function formatTime(ts: number) {
   return new Date(ts).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 }
 
-export default function ListPanel({ todos, entries, onToggle, onDelete, onAdd, onLoadEntry, onClose }: Props) {
+export default function ListPanel({ todos, entries, onToggle, onDelete, onAdd, onLoadEntry, onClose, onRunAgent }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAddKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -74,6 +75,14 @@ export default function ListPanel({ todos, entries, onToggle, onDelete, onAdd, o
           <li key={t.id} className="todo-item">
             <button className="todo-check" onClick={() => onToggle(t.id)} aria-label="Complete" />
             <span className="todo-text">{t.text}</span>
+            <button
+              className="todo-agent-btn"
+              onClick={() => onRunAgent(t.text)}
+              aria-label="Run agent"
+              title="Research this task"
+            >
+              →
+            </button>
             <button className="todo-delete" onClick={() => onDelete(t.id)} aria-label="Delete">✕</button>
           </li>
         ))}

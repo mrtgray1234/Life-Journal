@@ -545,6 +545,179 @@ body {
   opacity: 0.7;
 }
 
+/* Agent panel */
+.agent-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  background: var(--panel-bg);
+  border-left: 1px solid var(--border);
+  padding: 52px 36px 52px 36px;
+  overflow-y: auto;
+  z-index: 20;
+  animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.agent-task-box {
+  background: rgba(74, 158, 255, 0.07);
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.agent-task-text {
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.agent-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agent-run-btn {
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s;
+  text-align: left;
+}
+
+.agent-run-btn:hover {
+  opacity: 0.88;
+}
+
+.agent-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  letter-spacing: 0.03em;
+}
+
+.agent-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.agent-section-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 12px 0 4px;
+  opacity: 0.8;
+}
+
+.agent-paragraph {
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--text);
+  margin: 0;
+}
+
+.agent-bullet {
+  display: flex;
+  gap: 8px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.agent-bullet-dot {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.agent-actions {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.agent-add-btn {
+  background: rgba(62, 207, 107, 0.08);
+  border: 1px solid rgba(62, 207, 107, 0.2);
+  color: #3ecf6b;
+  font-size: 12.5px;
+  font-family: inherit;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.agent-add-btn:hover:not(.added) {
+  background: rgba(62, 207, 107, 0.14);
+}
+
+.agent-add-btn.added {
+  color: var(--text-muted);
+  border-color: var(--border);
+  background: none;
+  cursor: default;
+}
+
+.agent-run-again {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: inherit;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  align-self: flex-start;
+}
+
+.agent-run-again:hover {
+  color: var(--text);
+  border-color: #333;
+}
+
+.todo-agent-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: transparent;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+  font-family: inherit;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.todo-item:hover .todo-agent-btn {
+  color: var(--accent);
+}
+
+.todo-agent-btn:hover {
+  background: rgba(74, 158, 255, 0.1);
+  color: var(--accent) !important;
+}
+
 /* Analyzing state */
 .analyzing-state {
   display: flex;

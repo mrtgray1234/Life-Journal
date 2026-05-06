@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import ListPanel, { TodoItem, JournalEntry } from "./ListPanel";
+import AgentPanel from "./AgentPanel";
 
 interface Analysis {
   reflection: string;
@@ -32,6 +33,7 @@ export default function Editor() {
   const [saved, setSaved] = useState(true);
   const [confirming, setConfirming] = useState(false);
   const [showList, setShowList] = useState(false);
+  const [agentTask, setAgentTask] = useState<string | null>(null);
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [addedTodos, setAddedTodos] = useState<Set<number>>(new Set());
@@ -199,6 +201,19 @@ export default function Editor() {
           onAdd={addTodo}
           onLoadEntry={loadEntry}
           onClose={() => setShowList(false)}
+          onRunAgent={(task) => {
+            setShowList(false);
+            setAgentTask(task);
+          }}
+        />
+      )}
+
+      {/* Agent panel (right) */}
+      {agentTask && (
+        <AgentPanel
+          task={agentTask}
+          onClose={() => setAgentTask(null)}
+          onAddTodo={addTodo}
         />
       )}
 
