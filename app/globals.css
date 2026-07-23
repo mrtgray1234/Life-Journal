@@ -371,6 +371,76 @@ body {
   cursor: default;
 }
 
+/* Smart list: groups, deadlines, apply */
+.panel-todo-group {
+  margin-bottom: 18px;
+}
+
+.todo-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.65;
+  margin: 0 0 8px;
+}
+
+.new-dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 7px;
+}
+
+.todo-deadline {
+  display: inline-block;
+  flex: none;
+  margin-left: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 1px 8px;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+
+.todo-deadline.overdue {
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.apply-btn {
+  width: 100%;
+  margin-top: 8px;
+  background: rgba(74, 158, 255, 0.1);
+  border: 1px solid rgba(74, 158, 255, 0.25);
+  color: var(--accent);
+  border-radius: 100px;
+  padding: 9px 20px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  transition: background 0.2s;
+}
+
+.apply-btn:hover:not(.added) {
+  background: rgba(74, 158, 255, 0.18);
+}
+
+.apply-btn.added {
+  background: rgba(62, 207, 107, 0.08);
+  border-color: rgba(62, 207, 107, 0.3);
+  color: #3ecf6b;
+  cursor: default;
+}
+
 /* ── List Panel (left) ─────────────────────────── */
 .list-panel {
   position: fixed;

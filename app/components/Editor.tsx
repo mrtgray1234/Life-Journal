@@ -1,12 +1,24 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import ListPanel, { TodoItem, JournalEntry } from "./ListPanel";
+import ListPanel, {
+  TodoItem,
+  JournalEntry,
+  groupByProject,
+  formatDeadline,
+} from "./ListPanel";
 import AgentPanel from "./AgentPanel";
+
+interface AnalyzedTodo {
+  existingId: string | null;
+  text: string;
+  project: string | null;
+  deadline: string | null;
+}
 
 interface Analysis {
   reflection: string;
-  todos: string[];
+  todos: AnalyzedTodo[];
 }
 
 function wordCount(text: string) {
@@ -36,7 +48,7 @@ export default function Editor() {
   const [agentTask, setAgentTask] = useState<string | null>(null);
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [addedTodos, setAddedTodos] = useState<Set<number>>(new Set());
+  const [applied, setApplied] = useState(false);
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -44,8 +56,12 @@ export default function Editor() {
   const resize = useCallback(() => {
     const el = ref.current;
     if (!el) return;
+    // Collapsing to "auto" shrinks the page for a frame, which clamps the
+    // scroll position and yanks the view — restore it after measuring.
+    const scrollY = window.scrollY;
     el.style.height = "auto";
     el.style.height = `${el.scrollHeight}px`;
+    window.scrollTo(0, scrollY);
   }, []);
 
   // Load all persisted data on mount
@@ -79,19 +95,43 @@ export default function Editor() {
     if (!text.trim() || isAnalyzing) return;
     setIsAnalyzing(true);
     setAnalysis(null);
-    setAddedTodos(new Set());
+    setApplied(false);
     try {
+      const active = todos
+        .filter((t) => !t.done)
+        .map(({ id, text, project, deadline }) => ({ id, text, project, deadline }));
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, todos: active }),
       });
       const data = await res.json();
       if (res.ok) setAnalysis(data);
     } finally {
       setIsAnalyzing(false);
     }
-  }, [text, isAnalyzing]);
+  }, [text, isAnalyzing, todos]);
+
+  // Replace the active list with Claude's reconciled version; keep done items.
+  const applyAnalysis = useCallback(() => {
+    if (!analysis) return;
+    setTodos((prev) => {
+      const byId = new Map(prev.map((t) => [t.id, t]));
+      const active = analysis.todos.map((a) => {
+        const existing = a.existingId ? byId.get(a.existingId) : undefined;
+        return {
+          id: existing?.id ?? uid(),
+          text: a.text,
+          done: false,
+          createdAt: existing?.createdAt ?? Date.now(),
+          project: a.project,
+          deadline: a.deadline,
+        };
+      });
+      return [...active, ...prev.filter((t) => t.done)];
+    });
+    setApplied(true);
+  }, [analysis]);
 
   const handleNewEntry = useCallback(() => {
     if (!text.trim()) return;
@@ -121,11 +161,6 @@ export default function Editor() {
       ...prev,
     ]);
   }, []);
-
-  const addTodoFromAnalysis = useCallback((text: string, index: number) => {
-    addTodo(text);
-    setAddedTodos((prev) => new Set(prev).add(index));
-  }, [addTodo]);
 
   const toggleTodo = useCallback((id: string) => {
     setTodos((prev) => prev.map((t) => t.id === id ? { ...t, done: !t.done } : t));
@@ -241,21 +276,29 @@ export default function Editor() {
 
                 {analysis.todos.length > 0 && (
                   <div className="panel-todos">
-                    <h3>To-dos</h3>
-                    <ul>
-                      {analysis.todos.map((todo, i) => (
-                        <li key={i}>
-                          <span>{todo}</span>
-                          <button
-                            className={`add-todo-btn ${addedTodos.has(i) ? "added" : ""}`}
-                            onClick={() => !addedTodos.has(i) && addTodoFromAnalysis(todo, i)}
-                            title="Add to My List"
-                          >
-                            {addedTodos.has(i) ? "✓" : "+"}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    <h3>Your list, reorganized</h3>
+                    {groupByProject(analysis.todos).map(([project, items]) => (
+                      <div key={project ?? "general"} className="panel-todo-group">
+                        {project && <p className="todo-group-label">{project}</p>}
+                        <ul>
+                          {items.map((todo, i) => (
+                            <li key={i}>
+                              {!todo.existingId && <span className="new-dot" title="New" />}
+                              <span>{todo.text}</span>
+                              {todo.deadline && (
+                                <span className="todo-deadline">{formatDeadline(todo.deadline)}</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                    <button
+                      className={`apply-btn ${applied ? "added" : ""}`}
+                      onClick={() => !applied && applyAnalysis()}
+                    >
+                      {applied ? "✓ List updated" : "Apply to my list"}
+                    </button>
                   </div>
                 )}
               </>

@@ -7,6 +7,8 @@ export interface TodoItem {
   text: string;
   done: boolean;
   createdAt: number;
+  project?: string | null;
+  deadline?: string | null; // ISO date, e.g. "2026-05-07"
 }
 
 export interface JournalEntry {
@@ -25,6 +27,32 @@ interface Props {
   onLoadEntry: (text: string) => void;
   onClose: () => void;
   onRunAgent: (task: string) => void;
+}
+
+export function groupByProject<T extends { project?: string | null }>(
+  items: T[]
+): [string | null, T[]][] {
+  const groups = new Map<string | null, T[]>();
+  for (const item of items) {
+    const key = item.project ?? null;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(item);
+  }
+  // Ungrouped tasks first, then projects alphabetically
+  return [...groups.entries()].sort(([a], [b]) => {
+    if (a === null) return -1;
+    if (b === null) return 1;
+    return a.localeCompare(b);
+  });
+}
+
+export function formatDeadline(iso: string): string {
+  const date = new Date(iso + "T00:00:00");
+  return date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+}
+
+export function isOverdue(iso: string): boolean {
+  return iso < new Date().toISOString().slice(0, 10);
 }
 
 function formatDate(ts: number) {
@@ -70,23 +98,37 @@ export default function ListPanel({ todos, entries, onToggle, onDelete, onAdd, o
         <p className="list-empty">Nothing here yet. Analyze an entry to pull in to-dos, or add one above.</p>
       )}
 
-      <ul className="todo-list">
-        {active.map((t) => (
-          <li key={t.id} className="todo-item">
-            <button className="todo-check" onClick={() => onToggle(t.id)} aria-label="Complete" />
-            <span className="todo-text">{t.text}</span>
-            <button
-              className="todo-agent-btn"
-              onClick={() => onRunAgent(t.text)}
-              aria-label="Run agent"
-              title="Research this task"
-            >
-              →
-            </button>
-            <button className="todo-delete" onClick={() => onDelete(t.id)} aria-label="Delete">✕</button>
-          </li>
-        ))}
-      </ul>
+      {groupByProject(active).map(([project, items]) => (
+        <div key={project ?? "general"}>
+          {project && <p className="list-section-label">{project}</p>}
+          <ul className="todo-list">
+            {[...items]
+              .sort((a, b) => (a.deadline ?? "9999") < (b.deadline ?? "9999") ? -1 : 1)
+              .map((t) => (
+                <li key={t.id} className="todo-item">
+                  <button className="todo-check" onClick={() => onToggle(t.id)} aria-label="Complete" />
+                  <span className="todo-text">
+                    {t.text}
+                    {t.deadline && (
+                      <span className={`todo-deadline ${isOverdue(t.deadline) ? "overdue" : ""}`}>
+                        {formatDeadline(t.deadline)}
+                      </span>
+                    )}
+                  </span>
+                  <button
+                    className="todo-agent-btn"
+                    onClick={() => onRunAgent(t.text)}
+                    aria-label="Run agent"
+                    title="Research this task"
+                  >
+                    →
+                  </button>
+                  <button className="todo-delete" onClick={() => onDelete(t.id)} aria-label="Delete">✕</button>
+                </li>
+              ))}
+          </ul>
+        </div>
+      ))}
 
       {done.length > 0 && (
         <>
